@@ -1,0 +1,40 @@
+
+# python compiled modules
+*.py[cod]
+
+# swap and back up files
+*.sw[po]
+*~
+\#*
+
+# C extensions
+*.so
+
+# Packages
+manage.py
+*.egg
+*.egg-info
+eggs
+develop-eggs
+.installed.cfg
+__pycache__
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+#org-mode files
+*.org
+*.bat
