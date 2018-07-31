@@ -4,7 +4,8 @@
 # Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\sui.py
 # Compiled at: 2017-11-08 17:37:11
 from cStringIO import StringIO
-import pysideuic, xml.etree.ElementTree
+import pysideuic
+import xml.etree.ElementTree as xml
 from PySide import QtGui
 from shiboken import wrapInstance as wrap
 import maya.OpenMayaUI as apiUI
