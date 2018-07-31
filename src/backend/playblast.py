@@ -143,17 +143,18 @@ class PlayblastExport(Action):
             exportutils.turn2dPanZoomOff(item.camera)
             if not kwargs.get('hdOnly'):
                 self.makePlayblast(sound=kwargs.get('sound'), local=kwargs.get('local'))
-            exportutils.removeFrameInfo()
-            removeDate()
-            showPolyCount()
+            
             exportutils.turnResolutionGateOff(item.camera)
             if kwargs.get('hd'):
-                removeNameLabel()
+                
                 exportutils.turnResolutionGateOffPer(item.camera)
                 exportutils.setDefaultResolution((1920, 1080))
-                exportutils.removeFrameInfo(all=True)
                 self.makePlayblast(sound=kwargs.get('sound'), hd=True, local=kwargs.get('local'))
                 showNameLabel()
+            exportutils.removeFrameInfo(all=True)
+            removeDate()
+            removeNameLabel()
+            showPolyCount()
             exportutils.restoreDefaultResolution()
             exportutils.restore2dPanZoom(item.camera)
         exportutils.restoreFrameInfo()
