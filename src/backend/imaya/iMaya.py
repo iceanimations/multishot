@@ -667,16 +667,17 @@ def renameFileNodePath(mapping):
             if util.normpath(pc.getAttr(fileNode + '.ftn')) == util.normpath(path):
                 pc.setAttr(fileNode + '.ftn', mapping[path])
 
-
 def getShadingEngineHistoryChain(shader):
     chain = []
     sets = cmds.sets(str(shader), q=True)
-    for inputs in map(lambda inp: getattr(pc.PyNode(shader), inp).inputs(), [
-     'vs', 'ds', 'ss']):
+    for inputs in map(lambda inp: getattr(
+                                        pc.PyNode(shader), inp).inputs(),
+                      ["vs", "ds", "ss"]):
         if inputs:
-            chain.extend([ x for x in pc.listHistory(inputs[0]) if not isinstance(x, pc.nt.Reference) if sets and x not in sets if 1 else True and not isinstance(x, pc.nt.GroupId)
-                         ])
-
+            chain.extend([x for x in pc.listHistory(inputs[0])
+                         if not isinstance(x, pc.nt.Reference) and
+                         ((x not in sets) if sets else True) and
+                         not isinstance(x, pc.nt.GroupId)])
     return chain + [shader]
 
 
