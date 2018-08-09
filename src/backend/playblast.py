@@ -23,7 +23,7 @@ def playblast(data):
 
 
 def getUsername():
-    return os.environ.get('USERNAME').upper().replace('.', ' ')
+    return ''#os.environ.get('USERNAME').upper().replace('.', ' ')
 
 
 def label():
