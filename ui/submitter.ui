@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>855</width>
+    <width>967</width>
     <height>745</height>
    </rect>
   </property>
@@ -120,7 +120,7 @@ padding-bottom: 1px;</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>835</width>
+         <width>947</width>
          <height>601</height>
         </rect>
        </property>
@@ -247,6 +247,16 @@ padding-bottom: 1px;</string>
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="combineGeosetsButton">
+        <property name="toolTip">
+         <string>Combine Geosets before exporting cache</string>
+        </property>
+        <property name="text">
+         <string>Combine Geosets</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="hdButton">
         <property name="enabled">
          <bool>true</bool>
@@ -362,7 +372,7 @@ padding-bottom: 1px;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>855</width>
+     <width>967</width>
      <height>21</height>
     </rect>
    </property>

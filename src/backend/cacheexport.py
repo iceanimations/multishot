@@ -26,6 +26,7 @@ class CacheExport(Action):
             self.path = osp.expanduser('~')
         if not self.get('objects'):
             self['objects'] = []
+        self.combineMeshes = []
 
     @staticmethod
     def initConf():
@@ -72,7 +73,7 @@ class CacheExport(Action):
             conf['cache_dir'] = self.path.replace('\\', '/')
             pc.select(item.camera)
             fillinout.fill()
-            if self.exportCache(conf, kwargs.get('local')):
+            if self.exportCache(conf, kwargs.get('local'), kwargs.get('combineGeosets')):
                 self.exportAnimatedTextures(conf, kwargs.get('local'))
                 pc.delete(map(lambda x: x.getParent(), self.combineMeshes))
                 del self.combineMeshes[:]
@@ -168,12 +169,12 @@ class CacheExport(Action):
 
     def MakeMeshes(self, objSets):
         mapping = {}
-        self.combineMeshes = []
+        self.combineMeshes[:] = []
         names = set()
         count = 1
-        for objectSet in [ setName for setName in objSets if type(pc.PyNode(setName)) != pc.nt.Mesh
+        for objectSet in [ setName for setName in objSets if type(setName) != pc.nt.Mesh
                          ]:
-            meshes = [ shape for transform in pc.PyNode(objectSet).dsm.inputs() for shape in transform.getShapes(type='mesh', ni=True)
+            meshes = [ shape for transform in objectSet.dsm.inputs() for shape in transform.getShapes(type='mesh', ni=True)
                      ]
             if not meshes:
                 errorsList.append('Could not Create cache for ' + str(objectSet) + '\nReason: This set is no longer a valid set')
@@ -222,16 +223,40 @@ class CacheExport(Action):
         pc.select(self.combineMeshes)
         return
 
-    def exportCache(self, conf, local=False):
+    def exportCache(self, conf, local=False, combineGeosets=False):
         pc.select(cl=True)
-        if self.get('objects'):
+        if self.objects:
             path = conf.get('cache_dir')
             tempFilePath = osp.join(self.tempPath, 'cache')
             tempFilePath = tempFilePath.replace('\\', '/')
             conf['cache_dir'] = tempFilePath
-            command = ('doCreateGeometryCache3 {version} {{ "{time_range_mode}", "{start_time}", "{end_time}", "{cache_file_dist}", "{refresh_during_caching}", "{cache_dir}", "{cache_per_geo}", "{cache_name}", "{cache_name_as_prefix}", "{action_to_perform}", "{force_save}", "{simulation_rate}", "{sample_multiplier}", "{inherit_modf_from_cache}", "{store_doubles_as_float}", "{cache_format}", "{worldSpace}"}};').format(**conf)
-            self.MakeMeshes(self.get('objects'))
-            pc.Mel.eval(command)
+            if not combineGeosets:
+                conf['cache_per_geo'] = 0
+                conf['cache_name'] = '%s'
+            command = ('doCreateGeometryCache3 {version} {{ "{time_range_mode}"'
+                       ', "{start_time}", "{end_time}", "{cache_file_dist}", '
+                       '"{refresh_during_caching}", "{cache_dir}", '
+                       '"{cache_per_geo}", "{cache_name}", '
+                       '"{cache_name_as_prefix}", "{action_to_perform}", '
+                       '"{force_save}", "{simulation_rate}", '
+                       '"{sample_multiplier}", "{inherit_modf_from_cache}", '
+                       '"{store_doubles_as_float}", "{cache_format}", '
+                       '"{worldSpace}"}};').format(**conf)
+            if combineGeosets:
+                self.MakeMeshes(self.objects)
+                pc.Mel.eval(command)
+            else:
+                names = set()
+                counter = 1
+                for geoset in self.objects:
+                    name = imaya.getNiceName(geoset.name()).replace('_geo_set',
+                                                                    '_cache')
+                    if name in names:
+                        name += str(counter)
+                        counter += 1
+                        names.add(name)
+                    pc.select(geoset.members())
+                    pc.Mel.eval(command%name)
             tempFilePath = tempFilePath.replace('/', '\\\\')
             try:
                 for phile in os.listdir(tempFilePath):
@@ -283,8 +308,11 @@ class CacheExport(Action):
             num = '%04d' % curtime
             pc.currentTime(curtime, e=True)
             for name, attr in animatedTextures:
-                fileImageName = osp.join(tempFilePath, ('.').join([name, num, 'png']))
-                newobj = pc.convertSolidTx(attr, samplePlane=True, rx=rx, ry=ry, fil='png', fileImageName=fileImageName)
+                fileImageName = osp.join(tempFilePath, ('.')
+                                         .join([name, num, 'png']))
+                newobj = pc.convertSolidTx(attr, samplePlane=True, rx=rx,
+                                           ry=ry, fil='png',
+                                           fileImageName=fileImageName)
                 pc.delete(newobj)
                 textures_exported = True
 
@@ -299,7 +327,8 @@ class CacheExport(Action):
         for phile in os.listdir(tempFilePath):
             philePath = osp.join(tempFilePath, phile)
             if local:
-                target_dir = exportutils.getLocalDestination(target_dir, depth=4)
+                target_dir = exportutils.getLocalDestination(target_dir,
+                                                             depth=4)
             exportutils.copyFile(philePath, target_dir, depth=4)
 
         return textures_exported
