@@ -139,14 +139,13 @@ class PlayblastExport(Action):
             showDate()
             exportutils.turnResolutionGateOn(item.camera)
             exportutils.showFrameInfo(item)
-            exportutils.setDefaultResolution((1920, 1080), default=kwargs.get('defaultResolution'))
+            exportutils.setDefaultResolution((1280, 720), default=kwargs.get('defaultResolution'))
             exportutils.turn2dPanZoomOff(item.camera)
             if not kwargs.get('hdOnly'):
                 self.makePlayblast(sound=kwargs.get('sound'), local=kwargs.get('local'))
             
             exportutils.turnResolutionGateOff(item.camera)
             if kwargs.get('hd'):
-                
                 exportutils.turnResolutionGateOffPer(item.camera)
                 exportutils.setDefaultResolution((1920, 1080))
                 self.makePlayblast(sound=kwargs.get('sound'), hd=True, local=kwargs.get('local'))
@@ -206,7 +205,7 @@ class PlayblastExport(Action):
         tempFilePath += '.mov'
         if hd:
             depth = 4
-            path = self.path
+            path = osp.join(self.path, 'HD')
             try:
                 os.mkdir(path)
             except:
