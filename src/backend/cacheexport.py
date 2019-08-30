@@ -254,7 +254,7 @@ class CacheExport(Action):
                     if name in names:
                         name += str(counter)
                         counter += 1
-                        names.add(name)
+                    names.add(name)
                     pc.select(geoset.members())
                     pc.Mel.eval(command%name)
             tempFilePath = tempFilePath.replace('/', '\\\\')
