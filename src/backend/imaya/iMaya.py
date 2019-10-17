@@ -1,7 +1,10 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\imaya\iMaya.py
+# Decompiled from:
+# Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\imaya\iMaya.py
 # Compiled at: 2017-11-08 17:37:11
 import os, tempfile
 try:
@@ -1369,6 +1372,7 @@ frameno_re = re.compile('\\d+')
 renderpass_re = re.compile('<renderpass>', re.I)
 aov_re = re.compile('<aov>', re.I)
 
+
 def removeLastNumber(path, bychar='?'):
     numbers = frameno_re.findall(path)
     if numbers:
@@ -1477,7 +1481,9 @@ def getGenericImageName(layer=None, camera=None, resolveAOVs=True, framePadder='
     return gins
 
 
-def getOutputFilePaths(renderLayer=None, useCurrentLayer=False, camera=None, useCurrentCamera=False, ignoreStartupCameras=True, switchToLayer=False, framePadder='?'):
+def getOutputFilePaths(renderLayer=None, useCurrentLayer=False, camera=None,
+                       useCurrentCamera=False, ignoreStartupCameras=True,
+                       switchToLayer=False, framePadder='?'):
     outputFilePaths = []
     renderLayers = None
     if renderLayer:

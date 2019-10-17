@@ -1,20 +1,38 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\cacheexport.py
+# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\cacheexport.py
 # Compiled at: 2017-11-08 17:37:11
-import shotactions, shotplaylist, pymel.core as pc, maya.cmds as cmds, os.path as osp, shutil, fillinout, os, exportutils
-from exceptions import *
-import imaya
-reload(imaya)
+
+import shotactions
+import shotplaylist
+import os.path as osp
+import shutil
+import fillinout
+import os
 import re
+
+import pymel.core as pc
+
+import exportutils
+
+from . import imaya
+
+
+reload(imaya)
 reload(exportutils)
+
 PlayListUtils = shotplaylist.PlaylistUtils
 Action = shotactions.Action
 errorsList = []
-openMotion = osp.join(osp.dirname(__file__), 'openMotion.mel').replace('\\', '/')
+openMotion = osp.join(
+        osp.dirname(__file__),
+        'openMotion.mel').replace('\\', '/')
 mel = '\nsource "%s";\n' % openMotion
 pc.mel.eval(mel)
+
 
 class CacheExport(Action):
 
@@ -47,18 +65,18 @@ class CacheExport(Action):
         conf['cache_format'] = 'mcc'
         conf['do_texture_export'] = 1
         conf['texture_export_data'] = [
-         (
-          '(?i).*badr_robot.*', ['shader:layeredTexture1.outColor']),
-         (
-          '(?i).*nano_regular.*', ['layeredTexture1.outColor']),
-         (
-          '(?i).*nano_docking.*', ['layeredTexture1.outColor']),
-         (
-          '(?i).*nano_covered.*', ['layeredTexture1.outColor']),
-         (
-          '(?i).*nano_with_bowling_arm.*', ['layeredTexture1.outColor']),
-         (
-          '(?i).*nano_shawarma.*', ['NanoShawarmaExpRenderPlaneMtl.outColor'])]
+            ('(?i).*badr_robot.*',
+                ['shader:layeredTexture1.outColor']),
+            ('(?i).*nano_regular.*',
+                ['layeredTexture1.outColor']),
+            ('(?i).*nano_docking.*',
+                ['layeredTexture1.outColor']),
+            ('(?i).*nano_covered.*',
+                ['layeredTexture1.outColor']),
+            ('(?i).*nano_with_bowling_arm.*',
+                ['layeredTexture1.outColor']),
+            ('(?i).*nano_shawarma.*',
+                ['NanoShawarmaExpRenderPlaneMtl.outColor'])]
         conf['texture_resX'] = 1024
         conf['texture_resY'] = 1024
         conf['worldSpace'] = 1
@@ -73,23 +91,26 @@ class CacheExport(Action):
             conf['cache_dir'] = self.path.replace('\\', '/')
             pc.select(item.camera)
             fillinout.fill()
-            if self.exportCache(conf, kwargs.get('local'), kwargs.get('combineGeosets')):
+            if self.exportCache(
+                    conf, kwargs.get('local'), kwargs.get('combineGeosets')):
                 self.exportAnimatedTextures(conf, kwargs.get('local'))
                 pc.delete(map(lambda x: x.getParent(), self.combineMeshes))
                 del self.combineMeshes[:]
                 self.exportCam(item.camera, kwargs.get('local'))
 
     def exportCam(self, orig_cam, local=False):
-        location = osp.splitext(cmds.file(q=True, location=True))
         path = osp.join(osp.dirname(self.path), 'camera')
         if not osp.exists(path):
             os.mkdir(path)
-        itemName = imaya.getNiceName(self.plItem.name) + '_cam' + imaya.getExtension()
+        itemName = imaya.getNiceName(self.plItem.name)\
+            + '_cam' + imaya.getExtension()
         tempFilePath = osp.join(self.tempPath, itemName)
         pc.select(orig_cam)
+
         try:
             p = pc.ls(sl=True)[0].firstParent()
-            if pc.nt.ParentConstraint in [ obj.__class__ for obj in p.getChildren() ]:
+            if pc.nt.ParentConstraint in [
+                    obj.__class__ for obj in p.getChildren()]:
                 flag = True
             else:
                 flag = False
@@ -98,28 +119,52 @@ class CacheExport(Action):
 
         if flag:
             pc.select(orig_cam)
-            duplicate_cam = pc.duplicate(rr=True, name='mutishot_export_duplicate_camera')[0]
+            duplicate_cam = pc.duplicate(
+                    rr=True, name='mutishot_export_duplicate_camera')[0]
             pc.parent(duplicate_cam, w=True)
             pc.select([orig_cam, duplicate_cam])
             constraints = set(pc.ls(type=pc.nt.ParentConstraint))
-            pc.mel.eval('doCreateParentConstraintArgList 1 { "0","0","0","0","0","0","0","1","","1" };')
+            pc.mel.eval(
+                    'doCreateParentConstraintArgList 1 '
+                    '{ "0","0","0","0","0","0","0","1","","1" };')
             if constraints:
-                cons = set(pc.ls(type=pc.nt.ParentConstraint)).difference(constraints).pop()
+                cons = set(pc.ls(type=pc.nt.ParentConstraint)).difference(
+                        constraints).pop()
             else:
                 cons = pc.ls(type=pc.nt.ParentConstraint)[0]
+
             pc.select(cl=True)
             pc.select(duplicate_cam)
-            pc.mel.eval('bakeResults -simulation true -t "%s:%s" -sampleBy 1 -disableImplicitControl true -preserveOutsideKeys true -sparseAnimCurveBake false -removeBakedAttributeFromLayer false -removeBakedAnimFromLayer false -bakeOnOverrideLayer false -minimizeRotation true -controlPoints false -shape true {"%s"};' % (self.plItem.inFrame, self.plItem.outFrame, duplicate_cam.name()))
+            pc.mel.eval('bakeResults -simulation '
+                        'true -t "%s:%s" '
+                        '-sampleBy 1 '
+                        '-disableImplicitControl true '
+                        '-preserveOutsideKeys true '
+                        '-sparseAnimCurveBake false '
+                        '-removeBakedAttributeFromLayer false '
+                        '-removeBakedAnimFromLayer false '
+                        '-bakeOnOverrideLayer false '
+                        '-minimizeRotation true '
+                        '-controlPoints false '
+                        '-shape true {"%s"};' % (
+                            self.plItem.inFrame,
+                            self.plItem.outFrame,
+                            duplicate_cam.name()))
             pc.delete(cons)
+
             name = imaya.getNiceName(orig_cam.name())
             name2 = imaya.getNiceName(orig_cam.firstParent().name())
-            pc.rename(orig_cam, 'temp_cam_name_from_multiShotExport')
-            pc.rename(orig_cam.firstParent(), 'temp_group_name_from_multiShotExport')
+            pc.rename(orig_cam,
+                      'temp_cam_name_from_multiShotExport')
+            pc.rename(orig_cam.firstParent(),
+                      'temp_group_name_from_multiShotExport')
             pc.rename(duplicate_cam, name)
+
             for node in pc.listConnections(orig_cam.getShape()):
                 if isinstance(node, pc.nt.AnimCurve):
                     try:
-                        attr = node.outputs(plugs=True)[0].name().split('.')[-1]
+                        attr = node.outputs(
+                                plugs=True)[0].name().split('.')[-1]
                     except IndexError:
                         continue
 
@@ -127,7 +172,12 @@ class CacheExport(Action):
                     node.output.connect(attribute, f=True)
 
             pc.select(duplicate_cam)
-        tempFilePath = pc.exportSelected(tempFilePath, force=True, expressions=True, constructionHistory=False, channels=True, shader=False, constraints=False, options='v=0', typ=imaya.getFileType(), pr=False)
+
+        tempFilePath = pc.exportSelected(
+                tempFilePath, force=True,
+                expressions=True, constructionHistory=False, channels=True,
+                shader=False, constraints=False, options='v=0',
+                typ=imaya.getFileType(), pr=False)
         tempFilePath2 = osp.splitext(tempFilePath)[0] + '.nk'
         pc.mel.openMotion(tempFilePath2, '.txt')
         if local:
@@ -148,7 +198,8 @@ class CacheExport(Action):
     path = property(getPath, setPath)
 
     def getObjects(self):
-        return [ pc.PyNode(obj) for obj in self.get('objects') if pc.objExists(obj) ]
+        return [pc.PyNode(obj) for obj in self.get('objects') if
+                pc.objExists(obj)]
 
     def addObjects(self, objects):
         self['objects'][:] = objects
@@ -156,12 +207,12 @@ class CacheExport(Action):
     objects = property(getObjects, addObjects)
 
     def appendObjects(self, objs):
-        objects = set([ obj.name() for obj in self.objects ])
+        objects = set([obj.name() for obj in self.objects])
         objects.update(objs)
         self.objects = list(objects)
 
     def removeObjects(self, objs):
-        objects = set([ obj.name() for obj in self.objects ])
+        objects = set([obj.name() for obj in self.objects])
         objects.difference_update(objs)
         self.objects = list(objects)
         if len(self.objects) == 0:
@@ -172,12 +223,16 @@ class CacheExport(Action):
         self.combineMeshes[:] = []
         names = set()
         count = 1
-        for objectSet in [ setName for setName in objSets if type(setName) != pc.nt.Mesh
-                         ]:
-            meshes = [ shape for transform in objectSet.dsm.inputs() for shape in transform.getShapes(type='mesh', ni=True)
-                     ]
+        for objectSet in [
+                setName for setName in objSets if type(setName) != pc.nt.Mesh]:
+            meshes = [shape
+                      for transform in objectSet.dsm.inputs()
+                      for shape in transform.getShapes(type='mesh', ni=True)]
             if not meshes:
-                errorsList.append('Could not Create cache for ' + str(objectSet) + '\nReason: This set is no longer a valid set')
+                errorsList.append(
+                        'Could not Create cache for '
+                        + str(objectSet)
+                        + '\nReason: This set is no longer a valid set')
                 continue
             combineMesh = pc.createNode('mesh')
             name = imaya.getNiceName(objectSet) + '_cache'
@@ -187,7 +242,8 @@ class CacheExport(Action):
             names.add(name)
             pc.rename(combineMesh, name)
             try:
-                mapping[osp.normpath(osp.join(self.path, name))] = str(imaya.getRefFromSet(pc.PyNode(objectSet)).path)
+                mapping[osp.normpath(osp.join(self.path, name))] = str(
+                        imaya.getRefFromSet(pc.PyNode(objectSet)).path)
             except:
                 mapping[osp.normpath(osp.join(self.path, name))] = ''
 
@@ -233,15 +289,16 @@ class CacheExport(Action):
             if not combineGeosets:
                 conf['cache_per_geo'] = 0
                 conf['cache_name'] = '%s'
-            command = ('doCreateGeometryCache3 {version} {{ "{time_range_mode}"'
-                       ', "{start_time}", "{end_time}", "{cache_file_dist}", '
-                       '"{refresh_during_caching}", "{cache_dir}", '
-                       '"{cache_per_geo}", "{cache_name}", '
-                       '"{cache_name_as_prefix}", "{action_to_perform}", '
-                       '"{force_save}", "{simulation_rate}", '
-                       '"{sample_multiplier}", "{inherit_modf_from_cache}", '
-                       '"{store_doubles_as_float}", "{cache_format}", '
-                       '"{worldSpace}"}};').format(**conf)
+            command = (
+                    'doCreateGeometryCache3 {version} {{ "{time_range_mode}"'
+                    ', "{start_time}", "{end_time}", "{cache_file_dist}", '
+                    '"{refresh_during_caching}", "{cache_dir}", '
+                    '"{cache_per_geo}", "{cache_name}", '
+                    '"{cache_name_as_prefix}", "{action_to_perform}", '
+                    '"{force_save}", "{simulation_rate}", '
+                    '"{sample_multiplier}", "{inherit_modf_from_cache}", '
+                    '"{store_doubles_as_float}", "{cache_format}", '
+                    '"{worldSpace}"}};').format(**conf)
             if combineGeosets:
                 self.MakeMeshes(self.objects)
                 pc.Mel.eval(command)
@@ -249,14 +306,14 @@ class CacheExport(Action):
                 names = set()
                 counter = 1
                 for geoset in self.objects:
-                    name = imaya.getNiceName(geoset.name()).replace('_geo_set',
-                                                                    '_cache')
+                    name = imaya.getNiceName(geoset.name(), full=True).replace(
+                                    '_geo_set', '_cache')
                     if name in names:
                         name += str(counter)
                         counter += 1
                     names.add(name)
                     pc.select(geoset.members())
-                    pc.Mel.eval(command%name)
+                    pc.Mel.eval(command % name)
             tempFilePath = tempFilePath.replace('/', '\\\\')
             try:
                 for phile in os.listdir(tempFilePath):
@@ -332,4 +389,3 @@ class CacheExport(Action):
             exportutils.copyFile(philePath, target_dir, depth=4)
 
         return textures_exported
-# okay decompiling cacheexport.pyc

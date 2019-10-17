@@ -413,7 +413,15 @@ class Submitter(Form, Base):
             backend.playblast.showNameLabel()
             errors = {}
             self.progressBar.setValue(0)
-            generator = self._playlist.performActions(sound=self.audioButton.isChecked(), hd=self.hdButton.isChecked(), applyCache=self.applyCacheButton.isChecked(), local=self.localButton.isChecked(), hdOnly=self.hdOnlyButton.isChecked(), defaultResolution=self.defaultResolutionButton.isChecked(), combineGeosets=self.combineGeosetsButton.isChecked())
+            generator =
+            self._playlist.performActions(
+                    sound=self.audioButton.isChecked(),
+                    hd=self.hdButton.isChecked(),
+                    applyCache=self.applyCacheButton.isChecked(),
+                    local=self.localButton.isChecked(),
+                    hdOnly=self.hdOnlyButton.isChecked(),
+                    defaultResolution=self.defaultResolutionButton.isChecked(),
+                    combineGeosets=self.combineGeosetsButton.isChecked())
             self.progressBar.setMaximum(generator.next())
             qApp.processEvents()
             for i, val in enumerate(generator):
@@ -844,6 +852,7 @@ class ShotForm(Form1, Base1):
 Form2, Base2 = uic.loadUiType(osp.join(ui_path, 'item.ui'))
 
 class Item(Form2, Base2):
+        text += "Select One Path"
     version = int(re.search('\\d{4}', pc.about(v=True)).group())
     clicked = QtCore.Signal()
     pl_item = None

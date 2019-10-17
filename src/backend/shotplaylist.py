@@ -1,17 +1,25 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\shotplaylist.py
+# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\shotplaylist.py
 # Compiled at: 2017-11-08 17:37:11
-from . import shotactions as actions
-import pymel.core as pc, re, json
+
+import re
+import json
 from collections import OrderedDict
+
+import pymel.core as pc
+
+from . import shotactions as actions
+
 
 class Playlist(object):
 
     def __new__(cls, code=''):
         if not isinstance(code, (str, unicode)):
-            raise TypeError, 'code must be string or unicode'
+            raise TypeError('code must be string or unicode')
         code = re.sub('[^a-z]', '', code.lower())
         if not plu.__playlistinstances__.get(code):
             plu.__playlistinstances__[code] = object.__new__(cls, code)
@@ -92,7 +100,9 @@ class Playlist(object):
         allActions = []
         for item in self.getItems():
             if item.selected:
-                allActions.extend([ action for action in item.actions.getActions() if action.enabled ])
+                allActions.extend([action
+                                   for action in item.actions.getActions()
+                                   if action.enabled])
 
         yield len(allActions)
         for actiontype in self.actionsOrder:
@@ -110,14 +120,18 @@ class PlaylistItem(object):
 
     def __new__(cls, attr, *args, **kwargs):
         if not isinstance(attr, pc.Attribute):
-            raise TypeError, "'attr' can only be of type pymel.core.Attribute"
+            raise TypeError("'attr' can only be of type pymel.core.Attribute")
         if not attr.objExists() or not attr.node().getShapes(type='camera'):
-            raise TypeError, 'Attribute %s does not exist on a camera' % attr.name
+            raise TypeError(
+                    'Attribute %s does not exist on a camera' % attr.name)
         if not plu.__iteminstances__.get(attr):
-            plu.__iteminstances__[attr] = object.__new__(cls, attr, *args, **kwargs)
+            plu.__iteminstances__[attr] = object.__new__(
+                    cls, attr, *args, **kwargs)
         return plu.__iteminstances__[attr]
 
-    def __init__(self, attr, name='', inframe=None, outframe=None, selected=False, readFromScene=False, saveToScene=True):
+    def __init__(
+            self, attr, name='', inframe=None, outframe=None,
+            selected=False, readFromScene=False, saveToScene=True):
         if not isinstance(name, (str, unicode)):
             raise TypeError, "'name' can only be of type str or unicode"
         self.__attr = attr
