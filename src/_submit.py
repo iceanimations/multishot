@@ -3,12 +3,23 @@
 # Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
 # Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\_submit.py
 # Compiled at: 2017-11-08 17:37:11
-import sui as uic
-cui = uic
+import os
+import os.path as osp
+import shutil
+import pymel.core as pc
+import re
+import subprocess
+
+from . import backend
 from PySide.QtGui import QIcon, QMessageBox, QFileDialog, qApp, QCheckBox
 from PySide import QtCore
-import os, os.path as osp, shutil, pymel.core as pc, re, subprocess, backend
+
+import sui as uic
+cui = uic
+
 reload(backend)
+
+
 CacheExport = backend.CacheExport
 exportutils = backend.exportutils
 Playlist = backend.Playlist
@@ -18,7 +29,11 @@ cacheexport = backend.cacheexport
 root_path = osp.dirname(osp.dirname(__file__))
 ui_path = osp.join(root_path, 'ui')
 icon_path = osp.join(root_path, 'icons')
+
 Form, Base = uic.loadUiType(osp.join(ui_path, 'submitter.ui'))
+Form2, Base2 = uic.loadUiType(osp.join(ui_path, 'item.ui'))
+Form1, Base1 = uic.loadUiType(osp.join(ui_path, 'form.ui'))
+
 
 class Submitter(Form, Base):
     _previousPath = ''
@@ -483,8 +498,6 @@ class Submitter(Form, Base):
         self.deleteLater()
 
 
-Form1, Base1 = uic.loadUiType(osp.join(ui_path, 'form.ui'))
-
 class ShotForm(Form1, Base1):
 
     def __init__(self, parent=None, pl_item=None):
@@ -849,10 +862,8 @@ class ShotForm(Form1, Base1):
         self.deleteLater()
 
 
-Form2, Base2 = uic.loadUiType(osp.join(ui_path, 'item.ui'))
-
 class Item(Form2, Base2):
-        text += "Select One Path"
+    text += "Select One Path"
     version = int(re.search('\\d{4}', pc.about(v=True)).group())
     clicked = QtCore.Signal()
     pl_item = None
@@ -863,13 +874,20 @@ class Item(Form2, Base2):
         self.setupUi(self)
         self.parentWin = parent
         self.collapsed = False
-        self.style = 'background-image: url(%s);\n' + 'background-repeat: no-repeat;\n' + 'background-position: center right'
+        self.style = (
+                'background-image: url(%s);\n' +
+                'background-repeat: no-repeat;\n' +
+                'background-position: center right')
         self.editButton.setIcon(QIcon(osp.join(icon_path, 'ic_edit.png')))
         self.deleteButton.setIcon(QIcon(osp.join(icon_path, 'ic_delete.png')))
-        self.iconLabel.setStyleSheet(self.style % osp.join(icon_path, 'ic_collapse.png'))
-        self.switchButton.setIcon(QIcon(osp.join(icon_path, 'ic_switch_camera.png')))
-        self.appendButton.setIcon(QIcon(osp.join(icon_path, 'ic_append_char.png')))
-        self.removeButton.setIcon(QIcon(osp.join(icon_path, 'ic_remove_char.png')))
+        self.iconLabel.setStyleSheet(
+                self.style % osp.join(icon_path, 'ic_collapse.png'))
+        self.switchButton.setIcon(
+                QIcon(osp.join(icon_path, 'ic_switch_camera.png')))
+        self.appendButton.setIcon(
+                QIcon(osp.join(icon_path, 'ic_append_char.png')))
+        self.removeButton.setIcon(
+                QIcon(osp.join(icon_path, 'ic_remove_char.png')))
         self.addButton.setIcon(QIcon(osp.join(icon_path, 'ic_add_char.png')))
         self.editButton.clicked.connect(self.edit)
         self.clicked.connect(self.parentWin.itemClicked)
@@ -883,8 +901,10 @@ class Item(Form2, Base2):
         self.addButton.clicked.connect(self.turnOnlySelectedObjectsOn)
         self.label.mouseDoubleClickEvent = lambda event: self.openLocation()
         self.label_2.mouseDoubleClickEvent = lambda event: self.openLocation2()
-        self.playblastPathLabel.mouseDoubleClickEvent = lambda event: self.openLocation()
-        self.cachePathLabel.mouseDoubleClickEvent = lambda event: self.openLocation2()
+        self.playblastPathLabel.mouseDoubleClickEvent = \
+            lambda event: self.openLocation()
+        self.cachePathLabel.mouseDoubleClickEvent = \
+            lambda event: self.openLocation2()
 
     def switchCamera(self):
         exportutils.switchCam(self.pl_item.camera)
@@ -894,49 +914,65 @@ class Item(Form2, Base2):
         if action:
             objects = backend.findAllConnectedGeosets()
             if not objects:
-                cui.showMessage(self, title='Shot Export', msg='No objects found in the selection', icon=QMessageBox.Information)
+                cui.showMessage(
+                        self, title='Shot Export',
+                        msg='No objects found in the selection',
+                        icon=QMessageBox.Information)
                 return
-            action.removeObjects([ obj.name() for obj in objects ])
+            action.removeObjects([obj.name() for obj in objects])
             self.pl_item.saveToScene()
             length = len(objects)
             temp = 's' if length > 1 else ''
-            exportutils.showInViewMessage(str(length) + ' object%s removed form %s' % (temp, self.pl_item.name))
+            exportutils.showInViewMessage(
+                    str(length) + ' object%s removed form %s' % (
+                        temp, self.pl_item.name))
 
     def turnSelectedObjectsOn(self):
         action = CacheExport.getActionFromList(self.pl_item.actions)
         if action:
             objects = backend.findAllConnectedGeosets()
             if not objects:
-                cui.showMessage(self, title='Shot Export', msg='No objects found in the selection', icon=QMessageBox.Information)
+                cui.showMessage(self, title='Shot Export',
+                                msg='No objects found in the selection',
+                                icon=QMessageBox.Information)
                 return
-            action.appendObjects([ obj.name() for obj in objects ])
+            action.appendObjects([obj.name() for obj in objects])
             self.pl_item.saveToScene()
             length = len(objects)
             temp = 's' if length > 1 else ''
-            exportutils.showInViewMessage(str(length) + ' object%s added to %s' % (temp, self.pl_item.name))
+            exportutils.showInViewMessage(
+                    str(length) + ' object%s added to %s' % (
+                        temp, self.pl_item.name))
 
     def turnOnlySelectedObjectsOn(self):
         action = CacheExport.getActionFromList(self.pl_item.actions)
         if action:
             objects = backend.findAllConnectedGeosets()
             if not objects:
-                cui.showMessage(self, title='Shot Export', msg='No objects found in the selection', icon=QMessageBox.Information)
+                cui.showMessage(
+                        self, title='Shot Export',
+                        msg='No objects found in the selection',
+                        icon=QMessageBox.Information)
                 return
-            action.objects = [ obj.name() for obj in objects ]
+            action.objects = [obj.name() for obj in objects]
             self.pl_item.saveToScene()
             length = len(objects)
             temp = 's' if length > 1 else ''
-            exportutils.showInViewMessage(str(length) + ' object%s added to %s' % (temp, self.pl_item.name))
+            exportutils.showInViewMessage(
+                    str(length) + ' object%s added to %s' % (
+                        temp, self.pl_item.name))
 
     def update(self):
         if self.pl_item:
             self.setTitle(self.pl_item.name)
             self.setCamera(self.pl_item.camera.name())
-            playblastPath = PlayblastExport.getActionFromList(self.pl_item.actions).path
+            playblastPath = PlayblastExport.getActionFromList(
+                    self.pl_item.actions).path
             self.setPlayblastPath(playblastPath)
-            self.setCachePath(CacheExport.getActionFromList(self.pl_item.actions).path)
-            self.setFrame('%d to %d' % (self.pl_item.inFrame,
-             self.pl_item.outFrame))
+            self.setCachePath(CacheExport.getActionFromList(
+                self.pl_item.actions).path)
+            self.setFrame('%d to %d' % (
+                self.pl_item.inFrame, self.pl_item.outFrame))
 
     def collapse(self, event=None):
         if self.collapsed:
@@ -957,19 +993,27 @@ class Item(Form2, Base2):
     def openLocation(self):
         pb = PlayblastExport.getActionFromList(self.pl_item.actions)
         if not osp.exists(pb.path):
-            cui.showMessage(self.parentWin, title='Path Error', msg='Path does not exist', icon=QMessageBox.Information)
+            cui.showMessage(
+                    self.parentWin, title='Path Error',
+                    msg='Path does not exist', icon=QMessageBox.Information)
             return
         subprocess.call('explorer %s' % pb.path, shell=True)
 
     def openLocation2(self):
         ce = CacheExport.getActionFromList(self.pl_item.actions)
         if not osp.exists(ce.path):
-            cui.showMessage(self.parentWin, title='Path Error', msg='Path does not exist', icon=QMessageBox.Information)
+            cui.showMessage(
+                    self.parentWin, title='Path Error',
+                    msg='Path does not exist', icon=QMessageBox.Information)
             return
         subprocess.call('explorer %s' % ce.path, shell=True)
 
     def delete(self):
-        btn = cui.showMessage(self, title='Delete Shot', msg='Are you sure, delete ' + '"' + self.getTitle() + '"?', icon=QMessageBox.Critical, btns=QMessageBox.Yes | QMessageBox.No)
+        btn = cui.showMessage(
+                self, title='Delete Shot',
+                msg='Are you sure, delete ' + '"' + self.getTitle() + '"?',
+                icon=QMessageBox.Critical,
+                btns=QMessageBox.Yes | QMessageBox.No)
         if btn == QMessageBox.Yes:
             self.parentWin.removeItem(self)
 

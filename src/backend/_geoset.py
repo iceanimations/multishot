@@ -1,16 +1,22 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\_geoset.py
+# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\_geoset.py
 # Compiled at: 2017-11-08 17:37:11
-import pymel.core as pc, maya.OpenMaya as api
+import pymel.core as pc
+import maya.OpenMaya as api
+
+
 a = ''
+
 
 def _memo(func):
     func._hash = {}
 
     def _wrapper(node):
-        if func._hash.has_key(node):
+        if node in func._hash:
             return func._hash[node]
         val = func(node)
         func._hash[node] = val
@@ -87,10 +93,12 @@ def findAllConnectedGeosets(mylist=None, restrictToNamespace=True):
 def getFromScreen(x, y, x_rect=None, y_rect=None):
     sel = api.MSelectionList()
     api.MGlobal.getActiveSelectionList(sel)
-    if x_rect != None and y_rect != None:
-        api.MGlobal.selectFromScreen(x, y, x_rect, y_rect, api.MGlobal.kReplaceList)
+    if x_rect is not None and y_rect is not None:
+        api.MGlobal.selectFromScreen(
+                x, y, x_rect, y_rect, api.MGlobal.kReplaceList)
     else:
-        api.MGlobal.selectFromScreen(x, y, api.MGlobal.kReplaceList)
+        api.MGlobal.selectFromScreen(
+                x, y, api.MGlobal.kReplaceList)
     objects = api.MSelectionList()
     api.MGlobal.getActiveSelectionList(objects)
     api.MGlobal.setActiveSelectionList(sel, api.MGlobal.kReplaceList)
@@ -101,13 +109,16 @@ def getFromScreen(x, y, x_rect=None, y_rect=None):
 
 def listSelectedControls():
     selection = pc.ls(sl=1, type='nurbsCurve', dag=True)
-    return [ node.firstParent() for node in selection ]
+    return [node.firstParent() for node in selection]
 
 
 def getFuture(node, visited=None):
     if visited is None:
         visited = set()
-    outputs = [ output for output in node.outputs(type=('constraint', 'mesh', 'transform')) if output not in visited ]
+    outputs = [output
+               for output in node.outputs(
+                   type=('constraint', 'mesh', 'transform'))
+               if output not in visited]
     visited.update(outputs)
     for thing in outputs:
         getFuture(thing, visited)

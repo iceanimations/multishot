@@ -1,15 +1,26 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\exportutils.py
+# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\exportutils.py
 # Compiled at: 2017-11-08 17:37:11
-import pymel.core as pc, maya.cmds as cmds, os
-osp = os.path
-import shutil, time, imaya, iutil
+
+import pymel.core as pc
+import maya.cmds as cmds
+import os
+import shutil
+import imaya
+import iutil
+
+import fillinout
+
 reload(imaya)
 reload(iutil)
-import fillinout
 reload(fillinout)
+osp = os.path
+
+
 errorsList = []
 localPath = 'D:\\multishotexport'
 if not osp.exists(localPath):
@@ -38,17 +49,24 @@ __current_frame__ = None
 __camera_name__ = None
 __focal_length__ = None
 __DEFAULT_RESOLUTION__ = None
-__fps_mapping__ = {'game': '15 fps', 
-   'film': 'Film (24 fps)', 'pal': 'PAL (25 fps)', 
-   'ntsc': 'NTSC (30 fps)', 'show': 'Show 48 fps', 
-   'palf': 'PAL Field 50 fps', 'ntscf': 'NTSC Field 60 fps', 
-   'millisec': 'milliseconds', 'sec': 'seconds', 
-   'min': 'minutes', 'hour': 'hours'}
+__fps_mapping__ = {
+        'game': '15 fps',
+        'film': 'Film (24 fps)',
+        'pal': 'PAL (25 fps)',
+        'ntsc': 'NTSC (30 fps)',
+        'show': 'Show 48 fps',
+        'palf': 'PAL Field 50 fps',
+        'ntscf': 'NTSC Field 60 fps',
+        'millisec': 'milliseconds',
+        'sec': 'seconds',
+        'min': 'minutes',
+        'hour': 'hours'}
 __stretchMeshEnvelope__ = {}
 __2d_pane_zoom__ = {}
 home = osp.join(osp.expanduser('~'), 'temp_shots_export')
 if not osp.exists(home):
     os.mkdir(home)
+
 
 def camHasKeys(camera):
     return pc.listConnections(camera, scn=True, d=False, s=True)
@@ -69,15 +87,17 @@ def getEnvFilePath():
 
 def getSaveFilePath(items):
     try:
-        items = [ item for item in items if item.selected ]
-        path = [ action for action in items[0].actions.getActions() if action.enabled ][0].path.split('SHOTS')[0]
+        items = [item for item in items if item.selected]
+        path = [action
+                for action in items[0].actions.getActions()
+                if action.enabled][0].path.split('SHOTS')[0]
         animPath = osp.join(path, 'ANIMATION')
         if not osp.exists(animPath):
             os.mkdir(animPath)
         path = osp.join(animPath, 'MULTISHOTEXPORT')
         if not osp.exists(path):
             os.mkdir(path)
-        path = osp.join(path, ('__').join([ item.name for item in items ]))
+        path = osp.join(path, ('__').join([item.name for item in items]))
         if not osp.exists(path):
             os.mkdir(path)
         return path
@@ -132,12 +152,14 @@ def getAudioNodes():
 
 
 def isConnected(_set):
-    return pc.PyNode(_set).hasAttr('forCache') and pc.PyNode(_set).forCache.get()
+    return pc.PyNode(_set).hasAttr('forCache')\
+            and pc.PyNode(_set).forCache.get()
 
 
 def isCompatible(_set):
     try:
-        return pc.polyEvaluate(_set, f=True) == pc.PyNode(_set).forCache.outputs()[0]
+        return pc.polyEvaluate(_set, f=True) ==\
+                pc.PyNode(_set).forCache.outputs()[0]
     except Exception as ex:
         pc.warning(str(ex))
         return True
@@ -225,8 +247,10 @@ def getDefaultResolution():
 def saveHUDColor():
     global __labelColor__
     global __valueColor__
-    __labelColor__ = pc.general.displayColor('headsUpDisplayLabels', dormant=True, q=True)
-    __valueColor__ = pc.general.displayColor('headsUpDisplayValues', dormant=True, q=True)
+    __labelColor__ = pc.general.displayColor(
+            'headsUpDisplayLabels', dormant=True, q=True)
+    __valueColor__ = pc.general.displayColor(
+            'headsUpDisplayValues', dormant=True, q=True)
 
 
 def restoreHUDColor():
@@ -267,17 +291,24 @@ def showFrameInfo(pl_item):
         return inOut
 
     removeFrameInfo()
-    pc.headsUpDisplay(__hud_frame_1__, lfs='large', label='FPS:', section=6, block=pc.headsUpDisplay(nfb=6), blockSize='medium', dfs='large', command=getFps)
-    pc.headsUpDisplay(__hud_frame_2__, lfs='large', label='IN OUT:', section=6, block=pc.headsUpDisplay(nfb=6), blockSize='medium', dfs='large', command=getInOut)
+    pc.headsUpDisplay(
+            __hud_frame_1__, lfs='large', label='FPS:', section=6,
+            block=pc.headsUpDisplay(nfb=6), blockSize='medium', dfs='large',
+            command=getFps)
+    pc.headsUpDisplay(
+            __hud_frame_2__, lfs='large', label='IN OUT:', section=6,
+            block=pc.headsUpDisplay(nfb=6), blockSize='medium', dfs='large',
+            command=getInOut)
     __camera_name__ = pc.optionVar(q='cameraNamesVisibility')
-    __current_frame__ = pc.optionVar(q='currentFrameVisibility')
-    __focal_length__ = pc.optionVar(q='focalLengthVisibility')
     pc.Mel.eval('setCurrentFrameVisibility(1)')
-    pc.headsUpDisplay('HUDCurrentFrame', e=True, lfs='large', dfs='large', bs='medium')
+    pc.headsUpDisplay(
+            'HUDCurrentFrame', e=True, lfs='large', dfs='large', bs='medium')
     pc.Mel.eval('setFocalLengthVisibility(1)')
-    pc.headsUpDisplay('HUDFocalLength', e=True, lfs='large', dfs='large', bs='medium')
+    pc.headsUpDisplay(
+            'HUDFocalLength', e=True, lfs='large', dfs='large', bs='medium')
     pc.Mel.eval('setCameraNamesVisibility(1)')
-    pc.headsUpDisplay('HUDCameraNames', e=True, lfs='large', dfs='large', bs='medium')
+    pc.headsUpDisplay(
+            'HUDCameraNames', e=True, lfs='large', dfs='large', bs='medium')
 
 
 def removeFrameInfo(all=False):

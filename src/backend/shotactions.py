@@ -1,16 +1,21 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\shotactions.py
+# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\shotactions.py
 # Compiled at: 2017-11-08 17:37:11
+
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
-import json, os.path as osp
+import json
+import os.path as osp
 dir_path = osp.dirname(__file__)
 
+
 class ActionList(OrderedDict):
-    """A list of Actions that can be performed on a :class:`shotplaylist.PlaylistItem`
-    or :class:`playlist.Playlist` """
+    """A list of Actions that can be performed on a
+    :class:`shotplaylist.PlaylistItem` or :class:`playlist.Playlist` """
 
     def __init__(self, item, *args, **kwargs):
         """Create an Action List"""
@@ -41,7 +46,7 @@ class ActionList(OrderedDict):
 
     def add(self, action):
         if not isinstance(action, Action):
-            raise TypeError, 'only Actions can be added'
+            raise TypeError('only Actions can be added')
         classname = action.__class__.__name__
         action._item = self._item
         self[classname] = action
@@ -51,7 +56,7 @@ class ActionList(OrderedDict):
         key = action
         if isinstance(action, Action):
             key = action.__class__.__name__
-        if self.has_key(key):
+        if key in self:
             del self[key]
 
 
@@ -147,7 +152,7 @@ class Action(OrderedDict):
     @classmethod
     def getActionFromList(cls, actionlist, forceCreate=True):
         if not isinstance(actionlist, ActionList):
-            raise TypeError, 'Only Action lists can be queried'
+            raise TypeError('Only Action lists can be queried')
         action = actionlist.get(cls.__name__)
         if not action and forceCreate:
             action = cls()

@@ -1,13 +1,25 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\textureexport.py
+# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\backend\textureexport.py
 # Compiled at: 2017-11-08 17:37:11
-import shotactions, shotplaylist, os.path as osp, pymel.core as pc, os, shutil, re
+
+import shotactions
+import shotplaylist
+import os.path as osp
+import pymel.core as pc
+import os
+import shutil
+import re
 from . import exportutils
+
+
 PlayListUtils = shotplaylist.Playlist
 Action = shotactions.Action
 errorsList = []
+
 
 class TextureExport(Action):
 
@@ -75,7 +87,9 @@ class TextureExport(Action):
         rx = conf['texture_resX']
         ry = conf['texture_resY']
         nameToAttrMapping = self.getNameToAttrMapping()
-        if exportAsTextures(nameToAttrMapping, startTime=start_time, endTime=end_time, rx=rx, ry=ry, outputDir=tempFilePath):
+        if exportAsTextures(
+                nameToAttrMapping, startTime=start_time, endTime=end_time,
+                rx=rx, ry=ry, outputDir=tempFilePath):
             target_dir = osp.join(self.path, 'tex')
             try:
                 if not osp.exists(target_dir):
@@ -88,7 +102,9 @@ class TextureExport(Action):
                 exportutils.copyFile(philePath, target_dir, depth=4)
 
 
-def exportAsTextures(nameToAttrMapping, startTime=None, endTime=None, rx=1024, ry=1024, outputDir='images'):
+def exportAsTextures(
+        nameToAttrMapping, startTime=None, endTime=None, rx=1024, ry=1024,
+        outputDir='images'):
     """ Export """
     textures_exported = False
     if not startTime:
@@ -101,7 +117,9 @@ def exportAsTextures(nameToAttrMapping, startTime=None, endTime=None, rx=1024, r
         for name, attr in nameToAttrMapping:
             fileImageName = osp.join(outputDir, ('.').join([name, num, 'iff']))
             try:
-                newobj = pc.convertSolidTx(attr, samplePlane=True, rx=rx, ry=ry, fil='tif', fileImageName=fileImageName)
+                newobj = pc.convertSolidTx(
+                        attr, samplePlane=True, rx=rx, ry=ry, fil='tif',
+                        fileImageName=fileImageName)
                 pc.delete(newobj)
                 textures_exported = True
             except (WindowsError, IOError):

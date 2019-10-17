@@ -133,7 +133,7 @@ class PlaylistItem(object):
             self, attr, name='', inframe=None, outframe=None,
             selected=False, readFromScene=False, saveToScene=True):
         if not isinstance(name, (str, unicode)):
-            raise TypeError, "'name' can only be of type str or unicode"
+            raise TypeError("'name' can only be of type str or unicode")
         self.__attr = attr
         self._camera = self.__attr.node()
         self.__data = OrderedDict()
@@ -149,7 +149,7 @@ class PlaylistItem(object):
             self.name = self.camera.name().split('|')[-1].split(':')[-1]
         if not self.inFrame or not self.outFrame:
             self.autosetInOut()
-        if not self.__data.has_key('playlistcodes'):
+        if 'playlistcodes' not in self.__data:
             self.__data['playlistcodes'] = []
         if not self.actions:
             self.actions = actions.ActionList(self)
@@ -254,7 +254,7 @@ class PlaylistItem(object):
         datastring = self.__attr.get()
         if datastring:
             self.__data = json.loads(datastring)
-            if not self.__data.has_key('actions'):
+            if 'actions' not in self.__data:
                 self.__data['actions'] = {}
             self.__data['actions'] = actions.ActionList(self)
 
@@ -357,18 +357,20 @@ class PlaylistUtils(object):
     def isAttrValid(attr):
         """ Check if the given attribute is where shot info should be stored.
         It must be a string attribute on a camera transform node
-        
+
         :type attr: pymel.core.Attribute()
         :raises TypeError: if attribute is not the expected type
         """
         if not isinstance(attr, pc.Attribute) or attr.get(type=1) != 'string':
             raise (
              TypeError,
-             "'attr' can only be of type pymel.core.Attribute of type                    string")
+             "'attr' can only be of type pymel.core.Attribute of type string")
         if not attr.objExists() or not attr.node().getShapes(type='camera'):
-            raise TypeError, 'Attribute %s does not exist on a camera' % attr.name
+            raise TypeError(
+                    'Attribute %s does not exist on a camera' % attr.name)
         if not PlaylistUtils.attrPattern.match(attr):
-            raise TypeError, 'Attribute %s does not have the correct name' % attr.name
+            raise TypeError(
+                    'Attribute %s does not have the correct name' % attr.name)
         return True
 
     @staticmethod
@@ -392,8 +394,10 @@ class PlaylistUtils(object):
     @staticmethod
     def getDisplayLayers():
         try:
-            return [ pc.PyNode(layer) for layer in pc.layout('LayerEditorDisplayLayerLayout', q=True, childArray=True)
-                   ]
+            return [pc.PyNode(layer)
+                    for layer in pc.layout(
+                        'LayerEditorDisplayLayerLayout',
+                        q=True, childArray=True)]
         except TypeError:
             pc.warning('Display layers not found in the scene')
             return []
