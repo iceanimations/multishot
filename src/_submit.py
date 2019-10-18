@@ -1,7 +1,9 @@
 # uncompyle6 version 3.2.3
 # Python bytecode 2.7 (62211)
-# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26) [MSC v.1500 64 bit (AMD64)]
-# Embedded file name: C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\_submit.py
+# Decompiled from: Python 2.7.15 (v2.7.15:ca079a3ea3, Apr 30 2018, 16:30:26)
+# [MSC v.1500 64 bit (AMD64)]
+# Embedded file name:
+# C:/Users/qurban.ali.ICE-144/Documents/maya/scripts\shot_subm\src\_submit.py
 # Compiled at: 2017-11-08 17:37:11
 import os
 import os.path as osp
@@ -15,7 +17,9 @@ from PySide.QtGui import QIcon, QMessageBox, QFileDialog, qApp, QCheckBox
 from PySide import QtCore
 
 import sui as uic
+import qutil
 cui = uic
+
 
 reload(backend)
 
@@ -42,17 +46,28 @@ class Submitter(Form, Base):
     def __init__(self, parent=uic.getMayaWindow()):
         super(Submitter, self).__init__(parent)
         self.setupUi(self)
-        self.__colors_mapping__ = {'Red': 4, 'Green': 14, 'Yellow': 17, 'Black': 1}
+        self.__colors_mapping__ = {
+                'Red': 4,
+                'Green': 14,
+                'Yellow': 17,
+                'Black': 1}
         self.progressBar.hide()
         self.collapsed = False
         self.stop = False
         self.breakdownWindow = None
-        self.addButton.setIcon(QIcon(osp.join(icon_path, 'ic_add.png')))
-        self.collapseButton.setIcon(QIcon(osp.join(icon_path, 'ic_toggle_collapse')))
-        self.deleteSelectedButton.setIcon(QIcon(osp.join(icon_path, 'ic_delete.png')))
-        self.sceneBreakdownButton.setIcon(QIcon(osp.join(icon_path, 'ic_update.png')))
-        search_ic_path = osp.join(icon_path, 'ic_search.png').replace('\\', '/')
-        style_sheet = ('\nbackground-image: url(%s);' + '\nbackground-repeat: no-repeat;' + '\nbackground-position: center left;') % search_ic_path
+        self.addButton.setIcon(
+                QIcon(osp.join(icon_path, 'ic_add.png')))
+        self.collapseButton.setIcon(
+                QIcon(osp.join(icon_path, 'ic_toggle_collapse')))
+        self.deleteSelectedButton.setIcon(
+                QIcon(osp.join(icon_path, 'ic_delete.png')))
+        self.sceneBreakdownButton.setIcon(
+                QIcon(osp.join(icon_path, 'ic_update.png')))
+        search_ic_path = osp.join(
+                icon_path, 'ic_search.png').replace('\\', '/')
+        style_sheet = ('\nbackground-image: url(%s);' +
+                       '\nbackground-repeat: no-repeat;' +
+                       '\nbackground-position: center left;') % search_ic_path
         style_sheet = self.searchBox.styleSheet() + style_sheet
         self.searchBox.setStyleSheet(style_sheet)
         self.collapseButton.clicked.connect(self.toggleCollapseAll)
@@ -60,13 +75,16 @@ class Submitter(Form, Base):
         self.selectAllButton.clicked.connect(self.selectAll)
         self.deleteSelectedButton.clicked.connect(self.deleteSelected)
         self.searchBox.textChanged.connect(self.searchShots)
-        self.searchBox.returnPressed.connect(lambda : self.searchShots(str(self.searchBox.text())))
+        self.searchBox.returnPressed.connect(
+                lambda: self.searchShots(str(self.searchBox.text())))
         self.exportButton.clicked.connect(self.export)
         self.browseButton.clicked.connect(self.browseFolder)
         self.cacheEnableAction.triggered.connect(self.enableCacheSelected)
         self.cacheDisableAction.triggered.connect(self.disableCacheSelected)
-        self.playblastEnableAction.triggered.connect(self.enablePlayblastSelected)
-        self.playblastDisableAction.triggered.connect(self.disablePlayblastSelected)
+        self.playblastEnableAction.triggered.connect(
+                self.enablePlayblastSelected)
+        self.playblastDisableAction.triggered.connect(
+                self.disablePlayblastSelected)
         self.sceneBreakdownButton.clicked.connect(self.sceneBreakdown)
         self.stopButton.clicked.connect(self.setStop)
         self.hdButton.toggled.connect(self.hdToggled)
@@ -91,7 +109,8 @@ class Submitter(Form, Base):
         if self.breakdownWindow:
             self.breakdownWindow.activateWindow()
             return
-        import login, auth.user as user
+        import login
+        import auth.user as user
         if not user.user_registered():
             if not login.Dialog().exec_():
                 return
@@ -180,7 +199,9 @@ class Submitter(Form, Base):
             msg = 'Are you sure, remove selected shots?'
             icon = QMessageBox.Question
             btns = QMessageBox.Yes | QMessageBox.Cancel
-        btn = cui.showMessage(self, title='Remove Selected', msg=msg, btns=btns, icon=icon)
+        btn = cui.showMessage(
+                self, title='Remove Selected', msg=msg,
+                btns=btns, icon=icon)
         if btn == QMessageBox.Yes:
             temp = []
             for item in self.items:
@@ -213,7 +234,9 @@ class Submitter(Form, Base):
             if not osp.exists(self.getSeqPath()):
                 msg = 'Sequence path does not exist'
             if msg:
-                cui.showMessage(self, title='Sequence Path Error', msg=msg, icon=QMessageBox.Information)
+                cui.showMessage(
+                        self, title='Sequence Path Error', msg=msg,
+                        icon=QMessageBox.Information)
                 return
         ShotForm(self).show()
 
@@ -269,7 +292,9 @@ class Submitter(Form, Base):
 
     def setHUDColor(self):
         color = 'Green'
-        exportutils.setHUDColor(self.__colors_mapping__.get(color), self.__colors_mapping__.get(color))
+        exportutils.setHUDColor(
+                self.__colors_mapping__.get(color),
+                self.__colors_mapping__.get(color))
 
     def isItemSelected(self):
         selected = False
@@ -302,7 +327,7 @@ class Submitter(Form, Base):
                 for action in item.actions.getActions():
                     if action.enabled:
                         if not osp.exists(action.path):
-                            if shots.has_key(item.name):
+                            if item.name in shots:
                                 shots[item.name].append(action.path)
                             else:
                                 shots[item.name] = [
@@ -346,7 +371,10 @@ class Submitter(Form, Base):
         self.stopButton.show()
         self.closeButton.hide()
         if not self.isItemSelected():
-            cui.showMessage(self, title='No selection', msg='No shot selected to export', icon=QMessageBox.Information)
+            cui.showMessage(
+                    self, title='No selection',
+                    msg='No shot selected to export',
+                    icon=QMessageBox.Information)
             return
         if self.applyCacheButton.isChecked():
             badObjects = self.ldLinked()
@@ -357,7 +385,13 @@ class Submitter(Form, Base):
                 for obj in badObjects:
                     detail += obj + '\n'
 
-                cui.showMessage(self, title='LD Error', msg='Could not find LD path for ' + str(numObjects) + ' set' + s + '\nThere is no guarantee that the exported cache will be compatible with the LD', details=detail, icon=QMessageBox.Information)
+                cui.showMessage(
+                        self, title='LD Error',
+                        msg='Could not find LD path for ' +
+                        str(numObjects) + ' set' + s +
+                        '\nThere is no guarantee that the exported'
+                        'cache will be compatible with the LD',
+                        details=detail, icon=QMessageBox.Information)
                 return
         badShots = self.isActionEnabled()
         if badShots:
@@ -367,7 +401,12 @@ class Submitter(Form, Base):
             for i, shot in enumerate(badShots):
                 detail += str(i + 1) + ' - ' + shot + '\n\n'
 
-            cui.showMessage(self, title='No Action', msg=str(numShots) + ' shot' + s + ' selected, but no action enabled', details=detail, icon=QMessageBox.Information)
+            cui.showMessage(
+                    self, title='No Action',
+                    msg=str(numShots) + ' shot' + s +
+                    ' selected, but no action enabled',
+                    details=detail,
+                    icon=QMessageBox.Information)
             return
         badShots = self.allPathsExist()
         if badShots and not self.localButton.isChecked():
@@ -381,35 +420,53 @@ class Submitter(Form, Base):
 
                 detail += '\n'
 
-            cui.showMessage(self, title='Path not found', msg=str(numShots) + ' shot' + s + ' selected, but no path found', details=detail, icon=QMessageBox.Information)
+            cui.showMessage(
+                    self, title='Path not found',
+                    msg=str(numShots) + ' shot' + s +
+                    ' selected, but no path found',
+                    details=detail, icon=QMessageBox.Information)
             return
         if self.audioButton.isChecked():
             audioNodes = exportutils.getAudioNodes()
             if not audioNodes:
-                btn = cui.showMessage(self, title='No Audio', msg='No audio found in the scene', ques='Do you want to proceed anyway?', icon=QMessageBox.Question, btns=QMessageBox.Yes | QMessageBox.No)
+                btn = cui.showMessage(
+                        self, title='No Audio',
+                        msg='No audio found in the scene',
+                        ques='Do you want to proceed anyway?',
+                        icon=QMessageBox.Question,
+                        btns=QMessageBox.Yes | QMessageBox.No)
                 if btn == QMessageBox.No:
                     return
             if len(audioNodes) > 1:
-                cui.showMessage(self, title='Audio Files', msg='More than one audio files found in the scene, ' + 'keep only one audio file', icon=QMessageBox.Information)
+                cui.showMessage(
+                        self, title='Audio Files',
+                        msg='More than one audio files found in the scene, ' +
+                        'keep only one audio file',
+                        icon=QMessageBox.Information)
                 return
         badShots = self.allCamerasGood()
         if badShots:
             s = 's' if len(badShots) > 1 else ''
             ss = '' if len(badShots) > 1 else 'es'
-            cui.showMessage(self, title='Bad Cameras', msg='Camera%s in %s selected shot%s do%s not have keys (in out)' % (s, len(badShots), s, ss), icon=QMessageBox.Information, details=('\n').join(badShots))
+            cui.showMessage(
+                    self, title='Bad Cameras',
+                    msg='Camera%s in %s selected shot%s do%s not '
+                    'have keys (in out)' % (s, len(badShots), s, ss),
+                    icon=QMessageBox.Information,
+                    details=('\n').join(badShots))
             return
         try:
             for directory in os.listdir(exportutils.home):
                 shutil.rmtree(osp.join(exportutils.home, directory))
 
-        except Exception as ex:
+        except:
             pass
 
         try:
             for directory in os.listdir(exportutils.localPath):
                 shutil.rmtree(osp.join(exportutils.localPath, directory))
 
-        except Exception as ex:
+        except:
             pass
 
         try:
@@ -428,8 +485,7 @@ class Submitter(Form, Base):
             backend.playblast.showNameLabel()
             errors = {}
             self.progressBar.setValue(0)
-            generator =
-            self._playlist.performActions(
+            generator = self._playlist.performActions(
                     sound=self.audioButton.isChecked(),
                     hd=self.hdButton.isChecked(),
                     applyCache=self.applyCacheButton.isChecked(),
@@ -454,11 +510,17 @@ class Submitter(Form, Base):
             if errors:
                 detail = ''
                 for shot in errors:
-                    detail += 'Shot: ' + shot + '\nReason: ' + errors[shot] + '\n\n'
+                    detail += 'Shot: ' + shot +\
+                            '\nReason: ' + errors[shot] + '\n\n'
 
-                cui.showMessage(self, title='Error', msg=str(len(errors)) + temp + 'not exported successfully', icon=QMessageBox.Critical, details=detail)
+                cui.showMessage(
+                        self, title='Error', msg=str(len(errors)) +
+                        temp + 'not exported successfully',
+                        icon=QMessageBox.Critical, details=detail)
         except Exception as ex:
-            cui.showMessage(self, title='Error', msg=str(ex), icon=QMessageBox.Critical)
+            cui.showMessage(
+                    self, title='Error', msg=str(ex),
+                    icon=QMessageBox.Critical)
         finally:
             self.progressBar.hide()
             PlayListUtils.restoreDisplayLayersState(state)
@@ -479,14 +541,21 @@ class Submitter(Form, Base):
             for error in exportutils.errorsList:
                 detail += error + '\n\n'
 
-            cui.showMessage(self, title='Error', msg='Errors occurred while exporting shots\n' + 'your files might be copy to: ' + exportutils.home, details=detail, icon=QMessageBox.Warning)
+            cui.showMessage(
+                    self, title='Error',
+                    msg='Errors occurred while exporting shots\n' +
+                    'your files might be copy to: ' + exportutils.home,
+                    details=detail, icon=QMessageBox.Warning)
             exportutils.errorsList[:] = []
         if cacheexport.errorsList:
             detail = ''
             for error in cacheexport.errorsList:
                 detail += error + '\n\n'
 
-            cui.showMessage(self, title='Error', msg='Errors occurred while exporting or applying cache\n', details=detail, icon=QMessageBox.Warning)
+            cui.showMessage(
+                    self, title='Error',
+                    msg='Errors occurred while exporting or applying cache\n',
+                    details=detail, icon=QMessageBox.Warning)
             cacheexport.errorsList[:] = []
 
     def getPlaylist(self):
@@ -582,7 +651,8 @@ class ShotForm(Form1, Base1):
             self.layerButtons.append(btn)
 
         self.setSelectAllButton()
-        map(lambda btn: btn.clicked.connect(self.setSelectAllButton), self.layerButtons)
+        map(lambda btn: btn.clicked.connect(self.setSelectAllButton),
+            self.layerButtons)
 
     def addObjects(self):
         for obj in exportutils.getObjects():
@@ -590,7 +660,8 @@ class ShotForm(Form1, Base1):
             self.objectsLayout.addWidget(btn)
             self.objectButtons.append(btn)
 
-        map(lambda btn: btn.clicked.connect(self.setSelectAllButton2), self.objectButtons)
+        map(lambda btn: btn.clicked.connect(self.setSelectAllButton2),
+            self.objectButtons)
 
     def getCurrentCameraName(self):
         return self.cameraBox.currentText().replace(':', '_').replace('|', '_')
@@ -627,8 +698,9 @@ class ShotForm(Form1, Base1):
 
     def addCameras(self):
         cams = pc.ls(type='camera')
-        names = [ cam.firstParent().name() for cam in cams if cam.orthographic.get() == False
-                ]
+        names = [cam.firstParent().name()
+                 for cam in cams
+                 if not cam.orthographic.get()]
         self.cameraBox.addItems(names)
         self.camCountLabel.setText(str(len(names)))
         self.addCamerasToStackedWidget(names)
@@ -655,7 +727,7 @@ class ShotForm(Form1, Base1):
             self.cameraButtons.append(btn)
 
     def getSelectedCameras(self):
-        return [ btn.text() for btn in self.cameraButtons if btn.isChecked() ]
+        return [btn.text() for btn in self.cameraButtons if btn.isChecked()]
 
     def populate(self):
         self.nameBox.setText(self.pl_item.name)
@@ -685,16 +757,21 @@ class ShotForm(Form1, Base1):
         self.cachePathBox.setText(cacheAction.path)
 
     def getKeyFrame(self, camera=None):
-        if camera == None:
+        if camera is None:
             camera = pc.PyNode(str(self.cameraBox.currentText()))
         animCurves = pc.listConnections(camera, scn=True, d=False, s=True)
         if not animCurves:
-            cui.showMessage(self, title='No Inout', msg='No in out found on "' + camera.name() + '"', icon=QMessageBox.Warning)
+            cui.showMessage(
+                    self, title='No Inout',
+                    msg='No in out found on "' + camera.name() + '"',
+                    icon=QMessageBox.Warning)
             self.keyFrameButton.setChecked(False)
             return (0, 1)
         frames = pc.keyframe(animCurves[0], q=True)
         if not frames:
-            cui.showMessage(self, msg='No in out found on "' + camera.name() + '"', icon=QMessageBox.Warning, title='No Inout')
+            cui.showMessage(
+                    self, msg='No in out found on "' + camera.name() + '"',
+                    icon=QMessageBox.Warning, title='No Inout')
             self.keyFrameButton.setChecked(False)
             return (0, 1)
         return (
@@ -715,28 +792,45 @@ class ShotForm(Form1, Base1):
         if self.playblastEnableButton.isChecked():
             if not self.autoCreate():
                 if not playblastPath:
-                    cui.showMessage(self, title='No Path', msg='Playblast Path not specified', icon=QMessageBox.Warning)
+                    cui.showMessage(
+                            self, title='No Path',
+                            msg='Playblast Path not specified',
+                            icon=QMessageBox.Warning)
                     return
                 if not osp.exists(playblastPath):
-                    cui.showMessage(self, title='Error', msg='Playblast path does not ' + 'exist', icon=QMessageBox.Information)
+                    cui.showMessage(
+                            self, title='Error',
+                            msg='Playblast path does not ' + 'exist',
+                            icon=QMessageBox.Information)
                     return
         if self.cacheEnableButton.isChecked():
             if not self.autoCreate():
                 if not cachePath:
-                    cui.showMessage(self, title='Cache Path', msg='Cache Path not specified', icon=QMessageBox.Warning)
+                    cui.showMessage(
+                            self, title='Cache Path',
+                            msg='Cache Path not specified',
+                            icon=QMessageBox.Warning)
                     return
                 if not osp.exists(cachePath):
-                    cui.showMessage(self, title='Error', msg='Cache path does not ' + 'exist', icon=QMessageBox.Information)
+                    cui.showMessage(
+                            self, title='Error',
+                            msg='Cache path does not ' + 'exist',
+                            icon=QMessageBox.Information)
                     return
-            if not [ obj for obj in self.objectButtons if obj.isChecked() ]:
-                cui.showMessage(self, title='Shot Export', msg='No object selected ' + 'for cache, select at least one or uncheck the ' + '"Enable" button')
+            if not [obj for obj in self.objectButtons if obj.isChecked()]:
+                cui.showMessage(
+                        self, title='Shot Export',
+                        msg='No object selected ' +
+                        'for cache, select at least one or uncheck the ' +
+                        '"Enable" button')
                 return
         if self.autoCreateButton.isChecked():
             self.createAll(playblastPath, cachePath)
         else:
             name = str(self.nameBox.text())
             if not name:
-                cui.showMessage(self, title='Shot name', msg='Shot name not specified')
+                cui.showMessage(
+                        self, title='Shot name', msg='Shot name not specified')
                 return
             camera = pc.PyNode(str(self.cameraBox.currentText()))
             if self.keyFrameButton.isChecked():
@@ -748,18 +842,23 @@ class ShotForm(Form1, Base1):
             self.create(name, camera, start, end, playblastPath, cachePath)
 
     def getSelectedLayers(self):
-        return [ str(layer.text()) for layer in self.layerButtons if layer.isChecked()
-               ]
+        return [str(layer.text())
+                for layer in self.layerButtons
+                if layer.isChecked()]
 
     def createAll(self, playblastPath, cachePath):
         prefixPath = self.getSeqPath()
         if not osp.exists(prefixPath):
-            cui.showMessage(self, title='Error', msg='Sequence path does not exist', icon=QMessageBox.Information)
+            cui.showMessage(
+                    self, title='Error', msg='Sequence path does not exist',
+                    icon=QMessageBox.Information)
             self.progressBar.hide()
             return
         cams = self.getSelectedCameras()
         if not cams:
-            cui.showMessage(self, title='Shot Export', msg='No camera selected', icon=QMessageBox.Information)
+            cui.showMessage(
+                    self, title='Shot Export', msg='No camera selected',
+                    icon=QMessageBox.Information)
             self.progressBar.hide()
             return
         _max = len(cams)
@@ -863,7 +962,7 @@ class ShotForm(Form1, Base1):
 
 
 class Item(Form2, Base2):
-    text += "Select One Path"
+    text = "Select One Path"
     version = int(re.search('\\d{4}', pc.about(v=True)).group())
     clicked = QtCore.Signal()
     pl_item = None
