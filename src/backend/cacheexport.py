@@ -222,7 +222,6 @@ class CacheExport(Action):
         mapping = {}
         self.combineMeshes[:] = []
         names = set()
-        count = 1
         for objectSet in [
                 setName for setName in objSets if type(setName) != pc.nt.Mesh]:
             meshes = [shape
@@ -235,10 +234,15 @@ class CacheExport(Action):
                         + '\nReason: This set is no longer a valid set')
                 continue
             combineMesh = pc.createNode('mesh')
-            name = imaya.getNiceName(objectSet) + '_cache'
+            name = imaya.getNiceName(objectSet.name()).replace(
+                                    '_geo_set', '_cache')
             if name in names:
-                name += str(count)
-                count += 1
+                counter = 1
+                _name = name.replace('_cache', '_cache_%02d' % counter)
+                while _name in names:
+                    counter += 1
+                    _name = name.replace('_cache', '_cache_%02d' % counter)
+                name = _name
             names.add(name)
             pc.rename(combineMesh, name)
             try:
@@ -301,18 +305,24 @@ class CacheExport(Action):
                     '"{worldSpace}"}};').format(**conf)
             if combineGeosets:
                 self.MakeMeshes(self.objects)
+                print command
                 pc.Mel.eval(command)
             else:
                 names = set()
-                counter = 1
                 for geoset in self.objects:
-                    name = imaya.getNiceName(geoset.name(), full=True).replace(
+                    name = imaya.getNiceName(geoset.name()).replace(
                                     '_geo_set', '_cache')
                     if name in names:
-                        name += str(counter)
-                        counter += 1
-                    names.add(name)
+                        counter = 1
+                        _name = name.replace('_cache', '_cache_%02d' % counter)
+                        while _name in names:
+                            counter += 1
+                            _name = name.replace(
+                                    '_cache',
+                                    '_cache_%02d' % counter)
+                        name = _name
                     pc.select(geoset.members())
+                    print command % name
                     pc.Mel.eval(command % name)
             tempFilePath = tempFilePath.replace('/', '\\\\')
             try:
