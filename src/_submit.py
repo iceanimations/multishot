@@ -16,8 +16,8 @@ from . import backend
 from PySide.QtGui import QIcon, QMessageBox, QFileDialog, qApp, QCheckBox
 from PySide import QtCore
 
+from .backend import imaya
 import sui as uic
-import qutil
 cui = uic
 
 
@@ -341,7 +341,7 @@ class Submitter(Form, Base):
             if item.selected:
                 ce = CacheExport.getActionFromList(item.actions)
                 for _set in ce.get('objects'):
-                    ref = qutil.getRefFromSet(pc.PyNode(_set))
+                    ref = imaya.getRefFromSet(pc.PyNode(_set))
                     if ref and osp.exists(str(ref.path)):
                         if not exportutils.linkedLD(str(ref.path)):
                             objects.append(_set)

@@ -312,6 +312,7 @@ class CacheExport(Action):
                 for geoset in self.objects:
                     name = imaya.getNiceName(geoset.name()).replace(
                                     '_geo_set', '_cache')
+
                     if name in names:
                         counter = 1
                         _name = name.replace('_cache', '_cache_%02d' % counter)
@@ -321,9 +322,11 @@ class CacheExport(Action):
                                     '_cache',
                                     '_cache_%02d' % counter)
                         name = _name
+
+                    names.add(name)
                     pc.select(geoset.members())
-                    print command % name
                     pc.Mel.eval(command % name)
+
             tempFilePath = tempFilePath.replace('/', '\\\\')
             try:
                 for phile in os.listdir(tempFilePath):
