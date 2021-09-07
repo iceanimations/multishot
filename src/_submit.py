@@ -13,8 +13,14 @@ import re
 import subprocess
 
 from . import backend
-from PySide.QtGui import QIcon, QMessageBox, QFileDialog, qApp, QCheckBox
-from PySide import QtCore
+import Qt
+reload(Qt)
+from Qt.QtGui import QIcon
+from Qt.QtWidgets import QMessageBox, QFileDialog, QCheckBox, QMainWindow, QDialog, QApplication, QWidget
+from Qt import QtCore
+from Qt.QtCompat import loadUi
+
+qApp = QApplication.instance()
 
 from .backend import imaya
 import sui as uic
@@ -34,18 +40,15 @@ root_path = osp.dirname(osp.dirname(__file__))
 ui_path = osp.join(root_path, 'ui')
 icon_path = osp.join(root_path, 'icons')
 
-Form, Base = uic.loadUiType(osp.join(ui_path, 'submitter.ui'))
-Form2, Base2 = uic.loadUiType(osp.join(ui_path, 'item.ui'))
-Form1, Base1 = uic.loadUiType(osp.join(ui_path, 'form.ui'))
 
-
-class Submitter(Form, Base):
+class Submitter(QMainWindow):
     _previousPath = ''
     _playlist = None
 
     def __init__(self, parent=uic.getMayaWindow()):
         super(Submitter, self).__init__(parent)
-        self.setupUi(self)
+        loadUi(os.path.join(ui_path, 'submitter.ui'), self)
+        #  self.setupUi(self)
         self.__colors_mapping__ = {
                 'Red': 4,
                 'Green': 14,
@@ -567,11 +570,12 @@ class Submitter(Form, Base):
         self.deleteLater()
 
 
-class ShotForm(Form1, Base1):
+class ShotForm(QDialog):
 
     def __init__(self, parent=None, pl_item=None):
         super(ShotForm, self).__init__(parent)
-        self.setupUi(self)
+        loadUi(os.path.join(ui_path, 'form.ui'), self)
+        #  self.setupUi(self)
         self.parentWin = parent
         self.progressBar.hide()
         self.startFrame = None
@@ -961,7 +965,7 @@ class ShotForm(Form1, Base1):
         self.deleteLater()
 
 
-class Item(Form2, Base2):
+class Item(QWidget):
     text = "Select One Path"
     version = int(re.search('\\d{4}', pc.about(v=True)).group())
     clicked = QtCore.Signal()
@@ -969,8 +973,9 @@ class Item(Form2, Base2):
 
     def __init__(self, parent=None, pl_item=None):
         super(Item, self).__init__(parent)
+        loadUi(osp.join(ui_path, 'form.ui'), self)
         self.pl_item = pl_item
-        self.setupUi(self)
+        #  self.setupUi(self)
         self.parentWin = parent
         self.collapsed = False
         self.style = (
